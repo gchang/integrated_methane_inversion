@@ -442,8 +442,8 @@ run_jacobian() {
         source submit_jacobian_simulations_array.sh
 
         if "$LognormalErrors"; then
-            sbatch --mem $RequestedMemory \
-                -c $RequestedCPUs \
+            sbatch --mem ${JacobianMemory:-$RequestedMemory} \
+                -c ${JacobianCPUs:-$RequestedCPUs} \
                 -t $RequestedTime \
                 -p $SchedulerPartition \
                 -W run_bkgd_simulation.sh
@@ -493,8 +493,8 @@ run_jacobian() {
         # Run the background simulation if lognormal errors enabled
         if "$LognormalErrors"; then
             printf "\n=== SUBMITTING BACKGROUND SIMULATION ===\n"
-            sbatch --mem $RequestedMemory \
-                -c $RequestedCPUs \
+            sbatch --mem ${JacobianMemory:-$RequestedMemory} \
+                -c ${JacobianCPUs:-$RequestedCPUs} \
                 -t $RequestedTime \
                 -p $SchedulerPartition \
                 -W run_bkgd_simulation.sh
