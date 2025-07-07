@@ -172,7 +172,7 @@ if [[ -z "$DataPathTROPOMI" ]]; then
         -t $RequestedTime \
         -p $SchedulerPartition \
         -o imi_output.tmp \
-        -W $downloadScript $StartDate $EndDate $tropomiCache
+        -W $downloadScript $StartDate $EndDate $tropomiCache ${SymlinkTROPOMI:-false} ${DataPath:-/home/ubuntu/ExtData}
     wait
     cat imi_output.tmp >>${InversionPath}/imi_output.log
     rm imi_output.tmp
