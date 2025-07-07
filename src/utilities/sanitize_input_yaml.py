@@ -117,6 +117,8 @@ optional_rules: Dict[str, Rule] = {
     "FirstPeriod": int,
     "AutoAdvanceFirstPeriod": bool,
     "CleanupIntermediaryFiles": bool,
+    # Satellite data download
+    "SymlinkTROPOMI": bool,
     # ReducedDimensionStateVector-related
     "ClusteringMethod": str,
     "NumberOfElements": int,

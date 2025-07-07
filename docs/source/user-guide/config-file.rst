@@ -430,6 +430,8 @@ the IMI on a local cluster<../advanced/local-cluster>`).
      - Path to GEOS-Chem input data.
    * - ``DataPathObs``
      - Path to satellite input data.
+   * - ``SymlinkTROPOMI``
+     - Optional. When ``true``, the TROPOMI/blended download step creates symbolic links to files in a local mirror of the AWS bucket layout under ``DataPath`` (``<DataPath>/<bucket>/<key>``) instead of downloading them from S3. Ignored when ``DataPathObs`` is set. Default is ``false``.
    * - ``GEOSChemEnv``
      - Path to file that activates the GEOS-Chem environment (with fortran comiler, netCDF libraries, etc.)
    * - ``PythonEnv``

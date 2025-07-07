@@ -14,7 +14,9 @@ from botocore.client import Config
 #              Function can be called from another script or run as a
 #              directly as a script.
 # Example Usage as a script:
-#     $ python download_TROPOMI.py 20190101 20190214 TROPOMI_data
+#     $ python download_TROPOMI.py 20190101 20190214 TROPOMI_data [use_symlink] [data_path]
+#     $ python download_TROPOMI.py 20190101 20190214 TROPOMI_data false /home/ubuntu/ExtData
+#     $ python download_TROPOMI.py 20190101 20190214 TROPOMI_data true /custom/data/path
 
 s3 = None
 VALID_TROPOMI_PROCESSOR_VERSIONS = ["020400", "020500", "020600", "020701", "020800"]
@@ -32,17 +34,22 @@ def download_from_s3(args):
     """
     Download s3 path to local directory if it doesn't already exist locally
     Arguments
-        args             [tuple] : (s3_path, bucket, storage_dir)
+        args             [tuple] : (s3_path, bucket, storage_dir, use_symlink, data_path)
     """
-    s3_path, bucket, storage_dir = args
+    s3_path, bucket, storage_dir, use_symlink, data_path = args
     s3 = boto3.client("s3", config=Config(signature_version=UNSIGNED))
     file = os.path.basename(s3_path)
     local_file_path = os.path.join(storage_dir, file)
 
     # Check if the file already exists locally
     if not os.path.exists(local_file_path):
-        # If not, download it
-        s3.download_file(bucket, s3_path, local_file_path)
+        # If not, download it or create symlink based on configuration
+        if use_symlink:
+            source_path = os.path.join(data_path, bucket, s3_path)
+            print(f"{local_file_path} -> {source_path}")
+            os.symlink(source_path, local_file_path)
+        else:
+            s3.download_file(bucket, s3_path, local_file_path)
     else:
         print(f"File {local_file_path} already exists locally. Skipping download.")
 
@@ -129,7 +136,7 @@ def get_s3_paths(start_date, end_date, bucket):
     return s3_paths
 
 
-def download_operational_TROPOMI(start_date, end_date, storage_dir):
+def download_operational_TROPOMI(start_date, end_date, storage_dir, use_symlink=False, data_path="/home/ubuntu/ExtData"):
     """
     Download TROPOMI data from AWS for desired dates.
 
@@ -137,22 +144,25 @@ def download_operational_TROPOMI(start_date, end_date, storage_dir):
         start_date  [datetime] : start date of data download
         end_date    [datetime] : end date of data download
         storage_dir      [str] : local directory to store downloaded files
+        use_symlink     [bool] : whether to create symlinks instead of downloading
+        data_path        [str] : path to local data directory for symlinks
     """
 
     bucket = "meeo-s5p"
     s3_paths = get_s3_paths(start_date, end_date, bucket)
     os.makedirs(storage_dir, exist_ok=True)
 
-    print("=============Downloading TROPOMI Operational Data=============")
-    print(f"Downloading {len(s3_paths)} files - ({start_date},{end_date}].")
+    action = "Linking to" if use_symlink else "Downloading"
+    print(f"============={action} TROPOMI Operational Data=============")
+    print(f"{action} {len(s3_paths)} files - ({start_date},{end_date}].")
     # Download the files using multiple cores
     with multiprocessing.Pool(112) as pool:
         pool.map(
-            download_from_s3, [(s3_path, bucket, storage_dir) for s3_path in s3_paths]
+            download_from_s3, [(s3_path, bucket, storage_dir, use_symlink, data_path) for s3_path in s3_paths]
         )
         pool.close()
         pool.join()
-    print("==================Finished TROPOMI Download ==================")
+    print(f"==================Finished TROPOMI {action} ==================")
 
     return s3_paths
 
@@ -161,6 +171,10 @@ if __name__ == "__main__":
     start = sys.argv[1]
     end = sys.argv[2]
     Sat_datadir = sys.argv[3]
+    # Optional arguments for symlink functionality
+    use_symlink = sys.argv[4].lower() == 'true' if len(sys.argv) > 4 else False
+    data_path = sys.argv[5] if len(sys.argv) > 5 else "/home/ubuntu/ExtData"
+    
     start_date = datetime.datetime.strptime(start, "%Y%m%d")
     end_date = datetime.datetime.strptime(end, "%Y%m%d")
-    download_operational_TROPOMI(start_date, end_date, Sat_datadir)
+    download_operational_TROPOMI(start_date, end_date, Sat_datadir, use_symlink, data_path)

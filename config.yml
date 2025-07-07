@@ -260,6 +260,10 @@ OutputPath: "/home/ubuntu/imi_output_dir"
 ## Path to GEOS-Chem input data
 DataPath: "/home/ubuntu/ExtData"
 
+## Symlink TROPOMI/blended files from a local mirror under DataPath (true)
+## instead of downloading them from AWS S3 (false)? Ignored if DataPathObs is set.
+SymlinkTROPOMI: false
+
 ## Conda environment file
 PythonEnv: "/home/ubuntu/integrated_methane_inversion/envs/aws/python.env"
 
