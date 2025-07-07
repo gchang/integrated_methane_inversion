@@ -15,6 +15,9 @@ SpinupMonths: 1
 ## Use blended TROPOMI+GOSAT data (true)? Or use operational TROPOMI data (false)?
 BlendedTROPOMI: false
 
+## Use symbolic links for TROPOMI data (true)? Or download data directly (false)?
+SymlinkTROPOMI: false
+
 ## Use observations over water? Set to false to filter out water observations
 UseWaterObs: false
 
