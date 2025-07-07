@@ -3,16 +3,17 @@ import datetime
 import os
 
 
-def cull_restarts(jacobian_runs_dir, posterior_dir, start_day, end_day):
+def cull_restarts(jacobian_runs_dir, posterior_dir, start_day, end_day, cleanup_intermediary=False):
     """
     GEOS-Chem bugs mean we need to output daily restart files instead of just one
     at the end of each week. This function culls the extra restarts we don't need.
 
     Arguments
-        jacobian_runs_dir [str] : directory containing Jacobian run directories
-        posterior_dir     [str] : posterior run directory
-        start_day         [str] : first day of current 1-week inversion ("yyyymmdd")
-        end_day           [str] : last day of current 1-week inversion ("yyyymmdd")
+        jacobian_runs_dir    [str]  : directory containing Jacobian run directories
+        posterior_dir        [str]  : posterior run directory
+        start_day            [str]  : first day of current 1-week inversion ("yyyymmdd")
+        end_day              [str]  : last day of current 1-week inversion ("yyyymmdd")
+        cleanup_intermediary [bool] : whether to delete intermediary output files (default: False)
     """
 
     # List Jacobian run directories
@@ -38,7 +39,32 @@ def cull_restarts(jacobian_runs_dir, posterior_dir, start_day, end_day):
                 delete_path = os.path.join(direc, restart)
                 os.system(f"rm {delete_path}")
 
-    print("Culled extra daily restart files")
+    # Optionally remove intermediary output files to save disk space
+    if cleanup_intermediary:
+        for direc in next(os.walk(jacobian_runs_dir))[1]:
+            contents_i = os.path.join(jacobian_runs_dir, direc, "OutputDir")
+            
+            # Remove LevelEdgeDiags files
+            restarts = [r for r in os.listdir(contents_i) if "GEOSChem.LevelEdgeDiags." in r]
+            for restart in restarts:
+                date = restart[24:32]
+                date_dt = datetime.datetime.strptime(date, "%Y%m%d")
+                if date_dt >= start and date_dt < end:
+                    delete_path = os.path.join(contents_i, restart)
+                    os.system(f"rm {delete_path}")
+            
+            # Remove SpeciesConc files
+            restarts = [r for r in os.listdir(contents_i) if "GEOSChem.SpeciesConc." in r]
+            for restart in restarts:
+                date = restart[21:29]
+                date_dt = datetime.datetime.strptime(date, "%Y%m%d")
+                if date_dt >= start and date_dt < end:
+                    delete_path = os.path.join(contents_i, restart)
+                    os.system(f"rm {delete_path}")
+        
+        print("Culled extra daily restart files and intermediary output files")
+    else:
+        print("Culled extra daily restart files")
 
 
 if __name__ == "__main__":
@@ -48,5 +74,7 @@ if __name__ == "__main__":
     posterior_dir = sys.argv[2]
     start_day = sys.argv[3]
     end_day = sys.argv[4]
+    # Optional argument for cleanup enablement
+    cleanup_intermediary = sys.argv[5].lower() == 'true' if len(sys.argv) > 5 else False
 
-    cull_restarts(jacobian_runs_dir, posterior_dir, start_day, end_day)
+    cull_restarts(jacobian_runs_dir, posterior_dir, start_day, end_day, cleanup_intermediary)
