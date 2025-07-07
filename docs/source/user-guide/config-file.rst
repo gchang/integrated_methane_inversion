@@ -166,6 +166,8 @@ Kalman filter options
      - Optional variable to specify which Kalman period to start on, if restarting an inversion. Default is ``1``.
    * - ``AutoAdvanceFirstPeriod``
      - When ``true``, at the end of every successfully completed Kalman period ``FirstPeriod`` is advanced in the active config file, so that a subsequent re-launch skips already-finished periods. Default is ``false``.
+   * - ``CleanupIntermediaryFiles``
+     - When ``true``, after each Kalman period the ``GEOSChem.LevelEdgeDiags`` and ``GEOSChem.SpeciesConc`` output files for that period are deleted from the Jacobian run directories to save disk space. Default is ``false``.
 
 State vector
 ~~~~~~~~~~~~

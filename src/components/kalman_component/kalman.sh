@@ -246,7 +246,7 @@ run_period() {
     cd ${InversionPath}
 
     # Delete unneeded daily restart files from Jacobian and posterior directories
-    python ${InversionPath}/src/components/kalman_component/cull_restarts.py $JacobianRunsDir $PosteriorRunDir $StartDate_i $EndDate_i
+    python ${InversionPath}/src/components/kalman_component/cull_restarts.py $JacobianRunsDir $PosteriorRunDir $StartDate_i $EndDate_i ${CleanupIntermediaryFiles:-false}
 
     # Persist period progress by advancing FirstPeriod in the active config, so a
     # subsequent re-launch of run_imi.sh skips already-completed periods.

@@ -116,6 +116,7 @@ optional_rules: Dict[str, Rule] = {
     "CustomPeriodsCSV": str,
     "FirstPeriod": int,
     "AutoAdvanceFirstPeriod": bool,
+    "CleanupIntermediaryFiles": bool,
     # ReducedDimensionStateVector-related
     "ClusteringMethod": str,
     "NumberOfElements": int,
