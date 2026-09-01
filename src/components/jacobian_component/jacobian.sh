@@ -547,6 +547,10 @@ cd \${RUNDIR}" jacobian_runs/run_jacobian_simulations.sh
 
     popd
 
+    # Resolve resources for Jacobian-stage jobs (JacobianMemory, JacobianCPUs,
+    # JacobianTime, JacobianPartition), falling back to the general settings
+    resolve_stage_resources Jacobian
+
     if ! "$PrecomputedJacobian"; then
 
         cd ${RunDirs}/jacobian_runs
@@ -573,16 +577,16 @@ cd \${RUNDIR}" jacobian_runs/run_jacobian_simulations.sh
                 run_bkgd_simulation.sh
             
             if "$UseGCHP"; then
-                sbatch --mem $RequestedMemory \
+                sbatch --mem $StageMemory \
                     -c 1 \
                     -N $NUM_NODES \
                     -n $TOTAL_CORES \
-                    -t $RequestedTime \
-                    -p $SchedulerPartition \
+                    -t $StageTime \
+                    -p $StagePartition \
                     -W run_bkgd_simulation.sh
 		wait
             else
-                submit_job $SchedulerType false $RequestedMemory $RequestedCPUs $RequestedTime $SchedulerPartition run_bkgd_simulation.sh
+                submit_stage_job $SchedulerType false Jacobian run_bkgd_simulation.sh
             fi
 
             printf "\n=== DONE BACKGROUND SIMULATION ===\n"
@@ -623,19 +627,19 @@ cd \${RUNDIR}" jacobian_runs/run_jacobian_simulations.sh
             -e "s:{RunDuration}:${RunDuration}:g" \
             run_prior_simulation.sh
         if "$UseGCHP"; then
-            sbatch --mem $RequestedMemory \
+            sbatch --mem $StageMemory \
                 -N $NUM_NODES \
                 -n $TOTAL_CORES \
                 -c 1 \
-                -t $RequestedTime \
+                -t $StageTime \
                 -o imi_output.tmp \
-                -p $SchedulerPartition \
+                -p $StagePartition \
                 -W run_prior_simulation.sh
 	    wait
 	    cat imi_output.tmp >>${InversionPath}/imi_output.log
             rm imi_output.tmp
         else
-            submit_job $SchedulerType true $RequestedMemory $RequestedCPUs $RequestedTime $SchedulerPartition run_prior_simulation.sh
+            submit_stage_job $SchedulerType true Jacobian run_prior_simulation.sh
         fi
 
         # check if prior simulation exited with non-zero exit code
@@ -648,16 +652,16 @@ cd \${RUNDIR}" jacobian_runs/run_jacobian_simulations.sh
         if "$LognormalErrors"; then
             printf "\n=== SUBMITTING BACKGROUND SIMULATION ===\n"
             if "$UseGCHP"; then
-                sbatch --mem $RequestedMemory \
+                sbatch --mem $StageMemory \
                     -c 1 \
                     -N $NUM_NODES \
                     -n $TOTAL_CORES \
-                    -t $RequestedTime \
-                    -p $SchedulerPartition \
+                    -t $StageTime \
+                    -p $StagePartition \
                     -W run_bkgd_simulation.sh
 		wait
             else
-		submit_job $SchedulerType false $RequestedMemory $RequestedCPUs $RequestedTime $SchedulerPartition run_bkgd_simulation.sh
+		submit_stage_job $SchedulerType false Jacobian run_bkgd_simulation.sh
             fi
             # check if background simulation exited with non-zero exit code
             [ ! -f ".error_status_file.txt" ] || imi_failed $LINENO jacobian.sh

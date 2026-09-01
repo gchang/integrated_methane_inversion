@@ -4,12 +4,12 @@ echo "running {END} jacobian simulations" >> {InversionPath}/imi_output.log
 # remove error status file if present
 rm -f .error_status_file.txt
 
-sbatch --array={START}-{END}{JOBS} --mem $RequestedMemory \
+sbatch --array={START}-{END}{JOBS} --mem $StageMemory \
 -c 1 \
 -N $NUM_NODES \
 -n $TOTAL_CORES \
--t $RequestedTime \
--p $SchedulerPartition \
+-t $StageTime \
+-p $StagePartition \
 -o imi_output.tmp \
 --open-mode=append \
 -W run_jacobian_simulations.sh

@@ -325,7 +325,9 @@ Job Resource Allocation
 These settings are used to allocate resources (CPUs and Memory) to the different simulations needed to run the inversion.
 Note: some python scripts are also deployed using slurm and default to using the ``RequestedCPUs`` and ``RequestedMemory`` settings. 
 If the inversion step requires more resources than the rest of the IMI workflow, using the optional ``InversionCPUs`` and ``InversionMemory`` 
-variables can be convenient.
+variables can be convenient. Likewise, the Jacobian simulations often have a different CPU/memory profile than the prior and posterior
+simulations; the optional ``JacobianCPUs``, ``JacobianMemory``, ``JacobianTime`` and ``JacobianPartition`` variables override the general
+settings for the Jacobian array, prior and background simulations only.
 
 .. list-table::
    :widths: 30, 70
@@ -339,6 +341,14 @@ variables can be convenient.
      - Optional Variable. Number of cores to allocate to the inversion job if different from ``RequestedCPUs``.
    * - ``InversionMemory``
      - Optional Variable. Amount of memory to allocate to inversion sbatch job (e.g. "32gb") if different from ``RequestedMemory``.
+   * - ``JacobianCPUs``
+     - Optional Variable. Number of cores to allocate to each Jacobian simulation if different from ``RequestedCPUs``.
+   * - ``JacobianMemory``
+     - Optional Variable. Amount of memory to allocate to each Jacobian simulation (e.g. "5gb") if different from ``RequestedMemory``.
+   * - ``JacobianTime``
+     - Optional Variable. Max amount of time to allocate to each Jacobian simulation if different from ``RequestedTime``.
+   * - ``JacobianPartition``
+     - Optional Variable. Partition to run the Jacobian simulations on if different from ``SchedulerPartition``.
    * - ``RequestedTime``
      - Max amount of time to allocate to each sbatch job (eg. "0-6:00")
    * - ``SchedulerPartition``
