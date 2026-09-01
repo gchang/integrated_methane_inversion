@@ -2,6 +2,8 @@
 
 # Common shell function for the IMI
 # Functions available in this file include:
+#   - resolve_stage_resources
+#   - submit_stage_job
 #   - submit_job
 #       - submit_slurm_job
 #       - submit_pbs_job
@@ -9,6 +11,37 @@
 #   - imi_failed
 #   - ncmax
 #   - ncmin
+
+# Description:
+#   Resolve the scheduler resources for a named workflow stage. Looks up the
+#   optional config keys <Stage>Memory, <Stage>CPUs, <Stage>Time and
+#   <Stage>Partition (e.g. JacobianMemory), falling back to RequestedMemory,
+#   RequestedCPUs, RequestedTime and SchedulerPartition when a stage-specific
+#   key is not set. Results are returned in the variables StageMemory,
+#   StageCPUs, StageTime and StagePartition.
+# Usage:
+#   resolve_stage_resources <Stage>
+resolve_stage_resources() {
+    local stage=$1
+    local mem_var="${stage}Memory"
+    local cpu_var="${stage}CPUs"
+    local time_var="${stage}Time"
+    local part_var="${stage}Partition"
+    StageMemory="${!mem_var:-$RequestedMemory}"
+    StageCPUs="${!cpu_var:-$RequestedCPUs}"
+    StageTime="${!time_var:-$RequestedTime}"
+    StagePartition="${!part_var:-$SchedulerPartition}"
+}
+
+# Description:
+#   Submit a job using the resources resolved for a named workflow stage
+#   (see resolve_stage_resources) with either SBATCH or PBS
+# Usage:
+#   submit_stage_job <SchedulerType> <output_bool> <Stage> <Script> <AdditionalArguments>
+submit_stage_job() {
+    resolve_stage_resources $3
+    submit_job $1 $2 $StageMemory $StageCPUs $StageTime $StagePartition "${@:4}"
+}
 
 # Description: 
 #   Submit a job with default ICI settings using either SBATCH or PBS

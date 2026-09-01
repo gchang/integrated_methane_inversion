@@ -169,6 +169,12 @@ InversionCPUs: 32
 InversionMemory: "32gb"
 RequestedTime: "24:00:00"
 SchedulerPartition: "debug"
+## Optional overrides for the Jacobian simulations (array, prior and
+## background runs). Defaults to the general settings above when unset.
+# JacobianCPUs: 4
+# JacobianMemory: "5gb"
+# JacobianTime: "24:00:00"
+# JacobianPartition: "debug"
 
 ## Max number of simultaneous Jacobian runs from the job array (-1: no limit)
 MaxSimultaneousRuns: -1
