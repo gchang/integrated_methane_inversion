@@ -152,7 +152,7 @@ run_spinup() {
             -W ${RunName}_Spinup.run
 	wait
     else
-	submit_job $SchedulerType false $RequestedMemory $RequestedCPUs $RequestedTime $SchedulerPartition ${RunDirs}/spinup_run/${RunName}_Spinup.run
+	submit_stage_job $SchedulerType false Spinup ${RunDirs}/spinup_run/${RunName}_Spinup.run
     fi
 
     # check if exited with non-zero exit code

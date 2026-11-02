@@ -95,7 +95,7 @@ run_inversion() {
     InvMem="${InversionMemory:-$RequestedMemory}"
     InvCPU="${InversionCPUs:-$RequestedCPUs}"
     InvTime="${InversionTime:-$RequestedTime}"
-    InvPartition="${InvSchedulerPartition:-$SchedulerPartition}"
+    InvPartition="${InversionPartition:-${InvSchedulerPartition:-$SchedulerPartition}}"
 
     # Execute inversion driver script
     submit_job $SchedulerType false $InvMem $InvCPU $InvTime $InvPartition ${InvDir}/run_inversion.sh $FirstSimSwitch

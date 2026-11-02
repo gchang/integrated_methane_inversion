@@ -243,7 +243,7 @@ run_posterior() {
             -W ${RunName}_Posterior.run
 	wait
     else
-	submit_job $SchedulerType false $RequestedMemory $RequestedCPUs $RequestedTime $SchedulerPartition ${RunName}_Posterior.run
+	submit_stage_job $SchedulerType false Posterior ${RunName}_Posterior.run
     fi
 
     # check if exited with non-zero exit code
