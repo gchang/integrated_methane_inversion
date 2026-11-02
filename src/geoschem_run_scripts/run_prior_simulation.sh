@@ -1,5 +1,6 @@
 #!/bin/bash
 #SBATCH -J {RunName}
+source {InversionPath}/src/utilities/spot_requeue.sh # requeue if EC2 Spot instance is reclaimed
 
 ### Run directory
 RUNDIR=$(pwd -P)

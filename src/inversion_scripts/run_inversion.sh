@@ -23,6 +23,7 @@ printf "\n=== PARSING CONFIG FILE ===\n"
 
 invPath={INVERSION_PATH}
 configFile={CONFIG_FILE}
+source ${invPath}/src/utilities/spot_requeue.sh # requeue if EC2 Spot instance is reclaimed
 
 # Get configuration
 #  This defines $StartDate, $EndDate, $RunName
