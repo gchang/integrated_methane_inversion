@@ -1,6 +1,8 @@
 #!/bin/bash
 
-set -e 
+set -e
+# a failed IMI run must make the container exit non-zero (the output is piped to tee)
+set -o pipefail 
 
 # configure slurm
 cd /home/ubuntu/install-scripts
