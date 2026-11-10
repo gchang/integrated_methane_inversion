@@ -23,7 +23,7 @@ RUN cd /home/ubuntu/integrated_methane_inversion/ && git fetch --tags
 # update default config.yml file TODO remove
 RUN sed -i "s/v2024-03/v2023-06/g" ~/integrated_methane_inversion/config.yml
 # use the container's micromamba environment (2.3.1 reads PythonEnv; CondaFile/CondaEnv are gone)
-RUN sed -i "s|^PythonEnv:.*|PythonEnv: \"/home/ubuntu/integrated_methane_inversion/envs/container/python.env\"|" ~/integrated_methane_inversion/config.yml
+RUN sed -i "s|^PythonEnv:.*|PythonEnv: \"envs/container/python.env\"|" ~/integrated_methane_inversion/config.yml
 
 # Python packages 2.3.1 imports that the base image's imi_env lacks:
 #   sparselt  (src/utilities/make_state_vector_file.py)

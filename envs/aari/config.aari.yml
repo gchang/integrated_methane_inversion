@@ -271,7 +271,7 @@ DataPath: "/home/ubuntu/aari-ExtData"
 SymlinkTROPOMI: true
 
 ## Conda environment file
-PythonEnv: "/home/ubuntu/integrated_methane_inversion/envs/container/python.env"
+PythonEnv: "envs/container/python.env"
 
 ## Download initial restart file from AWS S3?
 ##  NOTE: Must have AWS CLI enabled
